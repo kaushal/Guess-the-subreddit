@@ -8,7 +8,7 @@
   "dependencies": {
     "ejs": "*",
     "express": "3.5.1",
-	 "underscore": "*"
+    "underscore": "*",
     "request": "^2.34.0",
     "socket.io": "^0.9.16"
   }
