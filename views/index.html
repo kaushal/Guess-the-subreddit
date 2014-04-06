@@ -5,18 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Foundation | Welcome</title>
     <link rel="stylesheet" href="css/foundation.css" />
-    <script src="js/vendor/modernizr.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="js/index.js"></script>
+    <script src="js/vendor/modernizr.js"></script>
+    <script src="js/vendor/jquery.js"></script>
   </head>
   <body>
-    
+
     <div class="row">
       <div class="large-12 columns text-center">
-        <h1>Guess the Subreddit</h1>
+        <h1 id="new">Guess the Subreddit</h1>
       </div>
     </div>
-    
+
     <div class="row text-center">
       <div class="large-12 columns text-center">
         <h2 id="title"></h2>
@@ -48,10 +48,22 @@
         <h3 id="answer3"></h3>
       </div>
     </div>
-    
-    
-    <script src="js/vendor/jquery.js"></script>
+
+    <div class="row text-center">
+      <div class="large-12 columns text-center">
+        <ul class="inline-list">
+          <li id="score0"></li>
+          <li id="score1"></li>
+          <li id="score2"></li>
+          <li id="score3"></li>
+        </ul>
+      </div>
+    </div>
+
+
+
     <script src="js/foundation.min.js"></script>
+    <script src="js/index.js"></script>
     <script>
       $(document).foundation();
     </script>

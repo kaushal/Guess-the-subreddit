@@ -88,7 +88,7 @@ io.sockets.on('connection', function(socket) {
     });
 
     socket.on('currentQuestion', function(){
-        socket.emit('question', currentQuestion);
+        socket.emit('newQuestion', currentQuestion);
     });
 
     socket.on('getQuestion', function(){
