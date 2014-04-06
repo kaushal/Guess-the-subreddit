@@ -43,6 +43,7 @@ var votedPeople = [];
 var currentQuestion = {};
 var red = {};
 var opts = {};
+var four = [];
 function reddit() {
     nw('cool-agent-bro').login('ewok_gtr', 'imaginedragons').then(function(ewok_gtr) {
         return ewok_gtr.get('http://www.reddit.com/r/funny/new.json?sort=new&limit=100').then(function(url) {
@@ -58,7 +59,10 @@ function reddit() {
                   return false;
                 });
                 ewok_gtr.get('http://www.reddit.com/api/recommend/sr/'+red.data.subreddit).then(function(options) {
-                    opts = options;
+                    opts = options.map(function(v,e,a) { return v.sr_name;}).slice(0,3);
+                    opts.push(red.data.subreddit);
+                    four = opts.sort(function() { return .5 - Math.random();});
+                    console.log(opts);
             });
             return choice;
         });
@@ -86,9 +90,10 @@ io.sockets.on('connection', function(socket) {
 
     socket.on('getQuestion', function(){
         var redditObj = {};
-        redditObj['title'] = red.data.children[0].title;
-        redditObj['image'] = red.data.children[0].url;
-        redditObj['answers'] = ['test', 'test 2', 'test 3', 'test 4'];
+        redditObj['title'] = red.data.title;
+        redditObj['image'] = red.data.url;
+        console.log(red.data)
+        redditObj['answers'] = four;
         redditObj['correct'] = 3;
         currentQuestion = redditObj;
         io.sockets.emit('newQuestion', redditObj);
