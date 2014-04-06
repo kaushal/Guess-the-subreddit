@@ -39,13 +39,18 @@ app.get('/mobile', function(req, res) {
   res.sendfile(__dirname + "/views/mobile.html");
 });
 
-nw('cool-agent-bro').login('ewok_gtr', 'imaginedragons').then(function(ewok_gtr) {
-    return ewok_gtr.get('http://api.reddit.com/r/random').then(function(url) {
-        url.data.children.forEach(function(value, element, array){
-            console.log(value);
-        }); return url});
-});
+var red = {};
+function reddit() {
+    nw('cool-agent-bro').login('ewok_gtr', 'imaginedragons').then(function(ewok_gtr) {
+        return ewok_gtr.get('http://api.reddit.com/r/random').then(function(url) {
+            red = url;
+            url.data.children.forEach(function(value, element, array){
+                console.log(value);
+            }); return url});
+    });
+}
 
+reddit();
 
 var scores = [0, 0, 0, 0];
 var total = 0;
@@ -58,9 +63,13 @@ io.sockets.on('connection', function(socket) {
 
     socket.on('getQuestion', function(){
         var redditObj = {};
-
+        redditObj['title'] = red.data.children[0].title;
+        redditObj['image'] = red.data.children[0].url;
+        redditObj['answers'] = ['test', 'test 2', 'test 3', 'test 4'];
+        redditObj['correct'] = 3;
 
         io.sockets.emit('newQuestion', redditObj);
+        reddit();
     });
 });
 
