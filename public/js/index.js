@@ -1,4 +1,5 @@
 var socket = io.connect('/');
+var question;
 socket.on('connect', function() {
   socket.on("newQuestion", newQuestion);
 });
@@ -12,6 +13,7 @@ socket.on("update", function(data) {
 
 
 function newQuestion(data) {
+  question = data;
   $("#title").text(data.title);
   $("#image").attr("src", data.image);
   $("#answer0").text(data.answers[0]);
