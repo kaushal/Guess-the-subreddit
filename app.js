@@ -40,7 +40,7 @@ app.get('/mobile', function(req, res) {
   res.sendfile(__dirname + "/views/mobile.html");
 });
 
-var srs = ['funny','adviceanimals', 'aww', 'pics', 'EarthPorn', 'gifs', 'reactiongifs', 'spaceporn', 'cats', 'corgis'];
+var srs = ['funny','adviceanimals', 'aww', 'pics', 'EarthPorn', 'gifs', 'reactiongifs', 'spaceporn', 'cats', 'corgis', 'carporn', 'foodporn', 'polandball', 'spaceporn', 'fffffffuuuuuuuuuuuu'];
 var votedPeople = [];
 var currentQuestion = {};
 var red = {};
