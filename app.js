@@ -18,7 +18,10 @@ app.get('/user', function(req, res){
 });
 
 nw('cool-agent-bro').login('ewok_gtr', 'imaginedragons').then(function(ewok_gtr) {
-    return ewok_gtr.get('http://reddit.com/api/random').then(function(url) {console.log(url); return url});
+    return ewok_gtr.get('http://api.reddit.com/r/random').then(function(url) {
+        url.data.children.forEach(function(value, element, array){
+            console.log(value);
+        }); return url});
 });
 
 
