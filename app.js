@@ -3,6 +3,7 @@ var express = require('express')
     , server = require('http').createServer(app)
     , io = require('socket.io').listen(server)
     , nw = require('./nodewhal/nodewhal.js')
+	 , _ = require('underscore')
 
 server.listen(3000);
 console.log('app running at 3000');
@@ -39,6 +40,7 @@ app.get('/mobile', function(req, res) {
   res.sendfile(__dirname + "/views/mobile.html");
 });
 
+var srs = ['funny','adviceanimals', 'aww', 'pics', 'EarthPorn'];
 var votedPeople = [];
 var currentQuestion = {};
 var red = {};
@@ -46,7 +48,8 @@ var opts = {};
 var four = [];
 function reddit() {
     nw('cool-agent-bro').login('ewok_gtr', 'imaginedragons').then(function(ewok_gtr) {
-        return ewok_gtr.get('http://www.reddit.com/r/funny/new.json?sort=new&limit=100').then(function(url) {
+        sr = _.shuffle(srs)[0];
+        return ewok_gtr.get('http://www.reddit.com/r/'+sr+'/new.json?sort=new&limit=100').then(function(url) {
             choice = null;
             url.data.children.some(function(value, element, array) {
                   if (value.kind != "t3") return false;
@@ -61,7 +64,7 @@ function reddit() {
                 ewok_gtr.get('http://www.reddit.com/api/recommend/sr/'+red.data.subreddit).then(function(options) {
                     opts = options.map(function(v,e,a) { return v.sr_name;}).slice(0,3);
                     opts.push(red.data.subreddit);
-                    four = opts.sort(function() { return .5 - Math.random();});
+                    four = _.shuffle(opts);
                     console.log(opts);
             });
             return choice;
