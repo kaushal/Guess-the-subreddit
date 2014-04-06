@@ -1,0 +1,3 @@
+[submodule "nodewhal"]
+	path = nodewhal
+	url = git@github.com:go1dfish/nodewhal.git
