@@ -97,7 +97,8 @@ io.sockets.on('connection', function(socket) {
         redditObj['image'] = red.data.url;
         console.log(red.data)
         redditObj['answers'] = four;
-        redditObj['correct'] = 3;
+        console.log(red);
+        redditObj['correct'] = red.data.subreddit;
         currentQuestion = redditObj;
         io.sockets.emit('newQuestion', redditObj);
         reddit();
