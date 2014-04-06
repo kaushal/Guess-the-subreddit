@@ -11,13 +11,8 @@ console.log('app running at 3000');
  * Module dependencies.
  */
 
-var express = require('express');
-var routes = require('./routes');
-var user = require('./routes/user');
-var http = require('http');
 var path = require('path');
 
-var app = express();
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -44,44 +39,64 @@ app.get('/mobile', function(req, res) {
   res.sendfile(__dirname + "/views/mobile.html");
 });
 
-nw('cool-agent-bro').login('ewok_gtr', 'imaginedragons').then(function(ewok_gtr) {
-    return ewok_gtr.get('http://www.reddit.com/r/funny/new.json?sort=new&limit=100').then(function(url) {
-        choice = null;
-        url.data.children.some(function(value, element, array) {
-			  if (value.kind != "t3") return false;
-			  if (value.data.over_18 == true) return false;
-			  console.log(value.data.url);
-			  if (/jpg$|png$|gif$/.test(value.data.url)) {
-				  choice = value;
-				  return true;
-			  }
-			  return false;
+var votedPeople = [];
+var currentQuestion = {};
+var red = {};
+var opts = {};
+function reddit() {
+    nw('cool-agent-bro').login('ewok_gtr', 'imaginedragons').then(function(ewok_gtr) {
+        return ewok_gtr.get('http://www.reddit.com/r/funny/new.json?sort=new&limit=100').then(function(url) {
+            choice = null;
+            url.data.children.some(function(value, element, array) {
+                  if (value.kind != "t3") return false;
+                  if (value.data.over_18 == true) return false;
+                  console.log(value.data.url);
+                  if (/jpg$|png$|gif$/.test(value.data.url)) {
+                      red = value;
+                      return true;
+                  }
+                  return false;
+                });
+                ewok_gtr.get('http://www.reddit.com/api/recommend/sr/'+red.data.subreddit).then(function(options) {
+                    opts = options;
+            });
+            return choice;
+        });
+    });
+}
 
-			});
-		  ewok_gtr.get('http://www.reddit.com/api/recommend/sr/'+choice.data.subreddit).then(function(options) {
-			  console.log(options);
-			  return options;
-			});
-			  console.log(choice);
-			  return choice;
-   });
-});
-
+reddit();
 
 var scores = [0, 0, 0, 0];
 var total = 0;
 io.sockets.on('connection', function(socket) {
     socket.on('vote', function(data) {
-        scores[data['vote']]++;
-        total++;
-        io.sockets.emit('update', {'scores': scores, 'total': total});
+        if (votedPeople.indexOf(socket.id) == -1) {
+            votedPeople.push(socket.id);
+            console.log(socket.id);
+            scores[data['vote']]++;
+            total++;
+            io.sockets.emit('update', {'scores': scores, 'total': total});
+        }
+    });
+
+    socket.on('currentQuestion', function(){
+        socket.emit('question', currentQuestion);
     });
 
     socket.on('getQuestion', function(){
         var redditObj = {};
-
-
+        redditObj['title'] = red.data.children[0].title;
+        redditObj['image'] = red.data.children[0].url;
+        redditObj['answers'] = ['test', 'test 2', 'test 3', 'test 4'];
+        redditObj['correct'] = 3;
+        currentQuestion = redditObj;
         io.sockets.emit('newQuestion', redditObj);
+        reddit();
+
+        votedPeople = [];
+        scores = [0, 0, 0, 0];
+        total = 0;
     });
 });
 
