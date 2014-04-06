@@ -50,17 +50,16 @@ function reddit() {
     nw('cool-agent-bro').login('ewok_gtr', 'imaginedragons').then(function(ewok_gtr) {
         sr = _.shuffle(srs)[0];
         return ewok_gtr.get('http://www.reddit.com/r/'+sr+'/new.json?sort=new&limit=100').then(function(url) {
-            choice = null;
-            url.data.children.some(function(value, element, array) {
+            red = _.shuffle(url.data.children.filter(function(value,element,array) {
                   if (value.kind != "t3") return false;
                   if (value.data.over_18 == true) return false;
                   console.log(value.data.url);
                   if (/jpg$|png$|gif$/.test(value.data.url)) {
-                      red = value;
                       return true;
                   }
                   return false;
-                });
+                })[0];
+					
                 ewok_gtr.get('http://www.reddit.com/api/recommend/sr/'+red.data.subreddit).then(function(options) {
                     opts = options.map(function(v,e,a) { return v.sr_name;}).slice(0,3);
                     opts.push(red.data.subreddit);
