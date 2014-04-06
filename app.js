@@ -45,10 +45,26 @@ app.get('/mobile', function(req, res) {
 });
 
 nw('cool-agent-bro').login('ewok_gtr', 'imaginedragons').then(function(ewok_gtr) {
-    return ewok_gtr.get('http://api.reddit.com/r/random').then(function(url) {
-        url.data.children.forEach(function(value, element, array){
-            console.log(value);
-        }); return url});
+    return ewok_gtr.get('http://www.reddit.com/r/funny/new.json?sort=new&limit=100').then(function(url) {
+        choice = null;
+        url.data.children.some(function(value, element, array) {
+			  if (value.kind != "t3") return false;
+			  if (value.data.over_18 == true) return false;
+			  console.log(value.data.url);
+			  if (/jpg$|png$|gif$/.test(value.data.url)) {
+				  choice = value;
+				  return true;
+			  }
+			  return false;
+
+			});
+		  ewok_gtr.get('http://www.reddit.com/api/recommend/sr/'+choice.data.subreddit).then(function(options) {
+			  console.log(options);
+			  return options;
+			});
+			  console.log(choice);
+			  return choice;
+   });
 });
 
 
