@@ -39,6 +39,8 @@ app.get('/mobile', function(req, res) {
   res.sendfile(__dirname + "/views/mobile.html");
 });
 
+var votedPeople = [];
+var currentQuestion = {};
 var red = {};
 function reddit() {
     nw('cool-agent-bro').login('ewok_gtr', 'imaginedragons').then(function(ewok_gtr) {
@@ -56,9 +58,17 @@ var scores = [0, 0, 0, 0];
 var total = 0;
 io.sockets.on('connection', function(socket) {
     socket.on('vote', function(data) {
-        scores[data['vote']]++;
-        total++;
-        io.sockets.emit('update', {'scores': scores, 'total': total});
+        if (votedPeople.indexOf(socket.id) == -1) {
+            votedPeople.push(socket.id);
+            console.log(socket.id);
+            scores[data['vote']]++;
+            total++;
+            io.sockets.emit('update', {'scores': scores, 'total': total});
+        }
+    });
+
+    socket.on('currentQuestion', function(){
+        socket.emit('question', currentQuestion);
     });
 
     socket.on('getQuestion', function(){
@@ -67,9 +77,13 @@ io.sockets.on('connection', function(socket) {
         redditObj['image'] = red.data.children[0].url;
         redditObj['answers'] = ['test', 'test 2', 'test 3', 'test 4'];
         redditObj['correct'] = 3;
-
+        currentQuestion = redditObj;
         io.sockets.emit('newQuestion', redditObj);
         reddit();
+
+        votedPeople = [];
+        scores = [0, 0, 0, 0];
+        total = 0;
     });
 });
 
